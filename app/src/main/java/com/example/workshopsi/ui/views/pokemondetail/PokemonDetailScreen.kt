@@ -16,8 +16,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.example.workshopsi.core.models.Pokemon // Assuming this is your Pokemon model
+import com.example.workshopsi.core.models.Pokemon
 
+/**
+ * Tela que exibe os detalhes de um Pokémon específico.
+ *
+ * @param navController O controlador de navegação para gerenciar as transições de tela.
+ * @param pokemonName O nome do Pokémon cujos detalhes devem ser exibidos. Pode ser nulo.
+ * @param viewModel O ViewModel responsável por buscar e gerenciar os dados do Pokémon.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PokemonDetailScreen(
@@ -29,6 +36,7 @@ fun PokemonDetailScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val error by viewModel.error.collectAsState()
 
+    // Efeito para buscar os detalhes do Pokémon quando o nome do Pokémon muda.
     LaunchedEffect(pokemonName) {
         pokemonName?.let {
             viewModel.getPokemonDetail(it)
@@ -38,15 +46,19 @@ fun PokemonDetailScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(pokemonDetail?.name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } ?: "Detail") },
+                title = { Text(pokemonDetail?.name?.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() } ?: "Detalhe") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Voltar")
                     }
                 }
             )
         }
     ) { paddingValues ->
+        /**
+         * Contêiner principal para exibir o conteúdo da tela de detalhes.
+         * Gerencia a exibição com base nos estados de carregamento, erro ou sucesso.
+         */
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -59,7 +71,7 @@ fun PokemonDetailScreen(
                 }
                 error != null -> {
                     Text(
-                        text = "Error: $error", // Fixed redundant curly braces
+                        text = "Erro: $error",
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.Center)
                     )
@@ -68,8 +80,9 @@ fun PokemonDetailScreen(
                     PokemonDetailContent(pokemon = pokemonDetail!!)
                 }
                 else -> {
-                     if (pokemonName == null) { // Should not happen if navigation is set up correctly
-                         Text("Pokemon name not provided", modifier = Modifier.align(Alignment.Center))
+                     // Isso não deve acontecer se a navegação estiver configurada corretamente
+                     if (pokemonName == null) {
+                         Text("Nome do Pokémon não fornecido", modifier = Modifier.align(Alignment.Center))
                      }
                 }
             }
@@ -77,6 +90,11 @@ fun PokemonDetailScreen(
     }
 }
 
+/**
+ * Composable que exibe o conteúdo detalhado de um Pokémon.
+ *
+ * @param pokemon O objeto [Pokemon] contendo os detalhes a serem exibidos.
+ */
 @Composable
 fun PokemonDetailContent(pokemon: Pokemon) {
     Column(
@@ -85,10 +103,10 @@ fun PokemonDetailContent(pokemon: Pokemon) {
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(pokemon.sprites.other?.officialArtwork?.front_default ?: pokemon.sprites.front_default) // Prefer official artwork
+                .data(pokemon.sprites.other?.officialArtwork?.front_default ?: pokemon.sprites.front_default) // Preferir arte oficial
                 .crossfade(true)
                 .build(),
-            contentDescription = "${pokemon.name} image",
+            contentDescription = "Imagem de ${pokemon.name}",
             modifier = Modifier.size(200.dp)
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -97,12 +115,12 @@ fun PokemonDetailContent(pokemon: Pokemon) {
             style = MaterialTheme.typography.headlineMedium
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = "Height: ${pokemon.height / 10.0} m")
-        Text(text = "Weight: ${pokemon.weight / 10.0} kg")
+        Text(text = "Altura: ${pokemon.height / 10.0} m")
+        Text(text = "Peso: ${pokemon.weight / 10.0} kg")
         Spacer(modifier = Modifier.height(16.dp))
-        Text("Types: ${pokemon.types.joinToString { it.type.name.replaceFirstChar { char -> if (char.isLowerCase()) char.titlecase() else char.toString() } }}")
+        Text("Tipos: ${pokemon.types.joinToString { it.type.name.replaceFirstChar { char -> if (char.isLowerCase()) char.titlecase() else char.toString() } }}")
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Stats:", style = MaterialTheme.typography.titleMedium)
+        Text("Estatísticas:", style = MaterialTheme.typography.titleMedium)
         pokemon.stats.forEach { statEntry ->
             Text("${statEntry.stat.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }}: ${statEntry.base_stat}")
         }
