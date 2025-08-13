@@ -1,50 +1,62 @@
 package com.example.workshopsi.core.repository
 
 import com.example.workshopsi.core.models.Pokemon
-import com.example.workshopsi.core.models.PokemonListResponse // Keep this
 import com.example.workshopsi.core.services.PokeApiService
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
+/**
+ * Repositório responsável por buscar dados de Pokémon, tanto da API quanto de uma possível fonte de dados local (não implementado).
+ * Ele abstrai a origem dos dados para os ViewModels.
+ *
+ * @property pokeApiService O serviço da API para buscar dados de Pokémon.
+ */
 class PokemonRepository @Inject constructor(
     private val pokeApiService: PokeApiService
 ) {
 
     /**
-     * Fetches a paginated list of Pokemon with their full details.
-     * @param limit Number of Pokemon to fetch per page.
-     * @param offset Starting index for fetching Pokemon.
-     * @return Pair<List<Pokemon>, Boolean> where List<Pokemon> is the list of fetched Pokemon details,
-     *         and Boolean is true if more Pokemon can be loaded (i.e., response.next is not null), false otherwise.
+     * Busca uma lista paginada de Pokémon com seus detalhes completos.
+     *
+     * @param limit Número de Pokémon para buscar por página.
+     * @param offset Índice inicial para buscar Pokémon.
+     * @return Pair<List<Pokemon>, Boolean> onde List<Pokemon> é a lista de detalhes dos Pokémon buscados,
+     *         e Boolean é verdadeiro se mais Pokémon puderem ser carregados (ou seja, response.next não é nulo), falso caso contrário.
      */
     suspend fun getPaginatedPokemonWithDetails(limit: Int, offset: Int): Pair<List<Pokemon>, Boolean> = coroutineScope {
-        // Step 1: Fetch the basic list of Pokemon (names and detail URLs) for the current page
+        // Passo 1: Busca a lista básica de Pokémon (nomes e URLs de detalhes) para a página atual
         val listResponse = pokeApiService.getPokemonList(limit = limit, offset = offset)
 
-        // Step 2: Fetch details for each Pokemon in the list concurrently
+        // Passo 2: Busca os detalhes de cada Pokémon na lista concorrentemente
         val detailedPokemonDeferred = listResponse.results.map { pokemonResult ->
             async {
-                // Assuming pokemonResult.name is the correct identifier for getPokemonDetail
-                // If the API needs an ID extracted from pokemonResult.url, that logic would go here.
+                // Supondo que pokemonResult.name é o identificador correto para getPokemonDetail
+                // Se a API precisasse de um ID extraído de pokemonResult.url, essa lógica iria aqui.
                 pokeApiService.getPokemonDetail(pokemonResult.name)
             }
         }
-        val detailedPokemonList = detailedPokemonDeferred.awaitAll().filterNotNull() // Filter out any nulls if a detail fetch fails
+        val detailedPokemonList = detailedPokemonDeferred.awaitAll().filterNotNull() // Filtra quaisquer nulos se uma busca de detalhe falhar
 
-        // Step 3: Determine if more Pokemon can be loaded
+        // Passo 3: Determina se mais Pokémon podem ser carregados
         val canLoadMore = listResponse.next != null
 
         return@coroutineScope Pair(detailedPokemonList, canLoadMore)
     }
 
-    // If you need a function to get a single Pokémon's details (e.g., for a detail screen or later for search by exact name)
+    /**
+     * Busca os detalhes de um único Pokémon pelo nome ou ID.
+     * Útil para telas de detalhes ou para buscar por nome exato.
+     *
+     * @param nameOrId O nome ou ID do Pokémon a ser buscado.
+     * @return O objeto [Pokemon] com os detalhes, ou nulo se ocorrer um erro (ex: Pokémon não encontrado).
+     */
     suspend fun getPokemonDetail(nameOrId: String): Pokemon? {
         return try {
             pokeApiService.getPokemonDetail(nameOrId)
         } catch (e: Exception) {
-            // Handle error, e.g., Pokémon not found
+            // Lida com o erro, ex: Pokémon não encontrado
             null
         }
     }
