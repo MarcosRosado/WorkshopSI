@@ -15,8 +15,8 @@ O objetivo deste projeto é fornecer um exemplo prático e funcional que sirva c
 
 ## Como Rodar o Projeto
 
-1.  Clone este repositório: `git clone [URL_DO_REPOSITORIO]`
-2.  Abra o projeto no Android Studio (versão recomendada: [Inserir versão, ex: Hedgehog ou superior]).
+1.  Clone este repositório: `git clone https://github.com/MarcosRosado/WorkshopSI`
+2.  Abra o projeto no Android Studio.
 3.  Aguarde o Gradle sincronizar as dependências.
 4.  Execute o aplicativo em um emulador ou dispositivo físico.
 
