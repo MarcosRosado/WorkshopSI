@@ -75,3 +75,5 @@ Faz parte do Jetpack Navigation e permite a navegação entre Composables de for
 
 *   **Documentação:** [developer.android.com/jetpack/compose/navigation](https://developer.android.com/jetpack/compose/navigation)
 
+Meu Linkedin: [Link](https://www.linkedin.com/in/marcosrosado/)
+
