@@ -4,6 +4,8 @@ Bem-vindo ao repositório do projeto desenvolvido durante o Workshop SI! Este é
 
 O objetivo deste projeto é fornecer um exemplo prático e funcional que sirva como base de aprendizado para os participantes do workshop, ilustrando como construir uma aplicação robusta, escalável e com uma interface de usuário moderna.
 
+[LINK DA APRESENTAÇÃO](https://www.canva.com/design/DAGv--NareU/cMudz3iFW9oaku12k-inSQ/edit?utm_content=DAGv--NareU&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
+
 ## Funcionalidades (Exemplo)
 
 *   Listagem de dados consumidos de uma API externa (ex: PokeAPI).
